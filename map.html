@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>North America Polygon Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>North America Polygon</h1>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map and set the view to a reasonable location and zoom level
+        var map = L.map('map').setView([45, -100], 3);
+
+        // Add a tile layer from OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Define the coordinates for the North America polygon
+        var northAmericaCoords = [
+   [66.142750, -167.112472], [64.849412, -141.338990], [61.959240, -133.751810],
+    [59.923587, -124.034403], [60.024861, -98.886950], [54.191839, -89.134663],
+    [52.392400, -78.002418], [52.262380, -68.923741], [60.317732, -64.749177],
+    [52.251482, -55.453238], [46.855167, -50.877762], [43.080521, -65.601410],
+    [40.142875, -70.294206], [32.299939, -77.333400], [25.157298, -77.333400],
+    [23.983664, -82.084856], [27.989875, -85.545793], [28.558147, -92.878287],
+    [26.109243, -95.869945], [26.948968, -99.624181], [31.702996, -117.750106],
+    [37.585581, -126.197139], [46.209501, -124.789300], [53.315787, -133.646953],
+    [58.501270, -139.630268], [59.557690, -146.024202], [57.412078, -160.571870],
+    [61.602696, -170.426742]
+        ];
+
+        // Create a polygon and add it to the map
+        var northAmericaPolygon = L.polygon(northAmericaCoords, {
+            color: 'blue',
+            fillColor: 'lightblue',
+            fillOpacity: 0.5
+        }).addTo(map);
+
+        // Add a popup to the polygon
+        northAmericaPolygon.bindPopup("North America Polygon Boundary");
+    </script>
+</body>
+</html>
