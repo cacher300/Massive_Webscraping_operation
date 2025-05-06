@@ -7,11 +7,9 @@ from random import randint
 from aiohttp import ClientSession
 from datetime import datetime
 
-# Database setup
 conn = sqlite3.connect("police_alerts.db")
 cursor = conn.cursor()
 
-# Modified schema to include a timestamp column
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS alerts (
     uuid TEXT PRIMARY KEY,
@@ -38,7 +36,6 @@ CREATE TABLE IF NOT EXISTS alerts (
 conn.commit()
 
 
-# Function to insert police alerts in batch with timestamp
 def insert_police_alerts_batch(alerts):
     if alerts:
         timestamp = datetime.utcnow().isoformat()
@@ -63,7 +60,6 @@ def insert_police_alerts_batch(alerts):
         print(f"Inserted {count} new police alerts with timestamp {timestamp}.")
 
 
-# Set grid box dimensions and ranges
 lat_change = 0.5505419906547857
 long_change = 0.5174560546875
 urls = []
@@ -84,7 +80,6 @@ while lat <= 51:
 print(f"Total URLs to process: {len(urls)}")
 
 
-# Asynchronous function to fetch data from URL and collect police alerts
 async def fetch_alerts(session, url):
     try:
         async with session.get(url) as response:
@@ -92,9 +87,7 @@ async def fetch_alerts(session, url):
                 json_data = await response.text()
                 data = json.loads(json_data)
 
-                # Check if 'alerts' key exists and contains data
                 if "alerts" in data and data["alerts"]:
-                    # Extract police alerts specifically
                     police_alerts = [alert for alert in data["alerts"] if alert.get("type") == "POLICE"]
                     print(f"Fetched {len(police_alerts)} police alerts from URL: {url}")
                     return police_alerts
@@ -103,8 +96,8 @@ async def fetch_alerts(session, url):
                     return []
             elif response.status == 429:
                 print(f"Rate limit hit for URL: {url}. Waiting before retrying.")
-                await asyncio.sleep(4)  # Wait 2 seconds before retrying
-                return await fetch_alerts(session, url)  # Retry the request
+                await asyncio.sleep(4)  
+                return await fetch_alerts(session, url)  
             else:
                 print(f"Failed to retrieve data for URL: {url}, Status Code: {response.status}")
                 return []
@@ -113,24 +106,20 @@ async def fetch_alerts(session, url):
         return []
 
 
-# Main asynchronous function to handle all requests with delay between each one
 async def main():
     async with aiohttp.ClientSession() as session:
         print(f"Total URLs to process: {len(urls)}")
 
-        # Sequentially process each URL with a delay
         all_police_alerts = []
         for url in urls:
             alerts = await fetch_alerts(session, url)
             all_police_alerts.extend(alerts)
-            await asyncio.sleep(0.3)  # Delay of 0.3 seconds between each request
+            await asyncio.sleep(0.3)  
 
-        # Insert the collected alerts in a batch with timestamp
         insert_police_alerts_batch(all_police_alerts)
         print(f"Inserted {len(all_police_alerts)} new police alerts.")
 
 
-# Run the asynchronous main function
 try:
     asyncio.run(main())
 except RuntimeError:
